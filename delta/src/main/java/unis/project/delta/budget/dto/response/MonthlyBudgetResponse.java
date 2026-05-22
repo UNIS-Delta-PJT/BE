@@ -6,7 +6,7 @@ import unis.project.delta.budget.domain.MonthlyBudget;
 import java.util.List;
 
 @Builder
-public record CreateBudgetResponse(
+public record MonthlyBudgetResponse(
         Long monthlyBudgetId,
         String yearMonth,
         Long totalAmount,
@@ -30,7 +30,7 @@ public record CreateBudgetResponse(
         }
     }
 
-    public static CreateBudgetResponse from(MonthlyBudget savedBudget) {
+    public static MonthlyBudgetResponse from(MonthlyBudget savedBudget) {
         Long total = savedBudget.getCategoryBudgets().stream()
                 .mapToLong(CategoryBudget::getAmount)
                 .sum();
@@ -39,7 +39,7 @@ public record CreateBudgetResponse(
                 .map(CategoryBudgetInfo::from)
                 .toList();
 
-        return CreateBudgetResponse.builder()
+        return MonthlyBudgetResponse.builder()
                 .monthlyBudgetId(savedBudget.getMonthlyBudgetId())
                 .yearMonth(savedBudget.getYearMonth())
                 .totalAmount(savedBudget.getTotalAmount())

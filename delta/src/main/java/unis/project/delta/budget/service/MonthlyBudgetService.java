@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import unis.project.delta.budget.domain.CategoryBudget;
 import unis.project.delta.budget.domain.MonthlyBudget;
 import unis.project.delta.budget.dto.request.CreateBudgetRequest;
-import unis.project.delta.budget.dto.response.CreateBudgetResponse;
+import unis.project.delta.budget.dto.response.MonthlyBudgetResponse;
 import unis.project.delta.budget.repository.MonthlyBudgetRepository;
 import unis.project.delta.category.domain.Category;
 import unis.project.delta.category.repository.CategoryRepository;
@@ -26,7 +26,7 @@ public class MonthlyBudgetService {
 
     // 1. 원예산 등록
     @Transactional
-    public CreateBudgetResponse createMonthlyBudget(String uuid, CreateBudgetRequest request) {
+    public MonthlyBudgetResponse createMonthlyBudget(String uuid, CreateBudgetRequest request) {
         User user = findByUuid(uuid);
 
         // 카테고리별 예산 총합 일치 여부 확인
@@ -46,7 +46,7 @@ public class MonthlyBudgetService {
     }
 
     // 1-1. 예산 최초 등록
-    private CreateBudgetResponse saveNewMonthlyBudget(User user, CreateBudgetRequest request) {
+    private MonthlyBudgetResponse saveNewMonthlyBudget(User user, CreateBudgetRequest request) {
         // 부모 객체인 MonthlyBudget 먼저 생성
         MonthlyBudget monthlyBudget = MonthlyBudget.builder()
                 .yearMonth(request.yearMonth())
@@ -67,11 +67,11 @@ public class MonthlyBudgetService {
         }
 
         MonthlyBudget savedBudget = monthlyBudgetRepository.save(monthlyBudget);
-        return CreateBudgetResponse.from(savedBudget);
+        return MonthlyBudgetResponse.from(savedBudget);
     }
 
     // 1-2. 재등록시 누적 업데이트
-    private CreateBudgetResponse updateAndAccumulateBudget(MonthlyBudget budget, CreateBudgetRequest request) {
+    private MonthlyBudgetResponse updateAndAccumulateBudget(MonthlyBudget budget, CreateBudgetRequest request) {
         // 월 전체 총액 누적
         budget.updateTotalAmount(budget.getTotalAmount() + request.totalAmount());
 
@@ -95,10 +95,17 @@ public class MonthlyBudgetService {
             }
         }
 
-        return CreateBudgetResponse.from(budget);
+        return MonthlyBudgetResponse.from(budget);
     }
 
     // TODO: 2. 월예산 조회
+    @Transactional(readOnly = true)
+    public MonthlyBudgetResponse getMonthlyBudget(String uuid, String yearMonth) {
+        User user = findByUuid(uuid);
+        MonthlyBudget monthlyBudget = findByYearMonth(user, yearMonth);
+
+        return MonthlyBudgetResponse.from(monthlyBudget);
+    }
 
 
     // TODO: 3. 월예산 수정
@@ -113,6 +120,11 @@ public class MonthlyBudgetService {
     private Category findByCategoryId(Long categoryId) {
         return categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
+    }
+
+    private MonthlyBudget findByYearMonth(User user, String yearMonth) {
+        return monthlyBudgetRepository.findByUserAndYearMonth(user, yearMonth)
+                .orElseThrow(() -> new CustomException(ErrorCode.MONTHLY_BUDGET_NOT_FOUND));
     }
 
     // 등록 예산과 카테고리 총합 검증 메서드

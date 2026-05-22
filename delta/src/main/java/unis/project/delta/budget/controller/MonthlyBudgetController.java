@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import unis.project.delta.budget.dto.request.CreateBudgetRequest;
-import unis.project.delta.budget.dto.response.CreateBudgetResponse;
+import unis.project.delta.budget.dto.response.MonthlyBudgetResponse;
 import unis.project.delta.budget.service.MonthlyBudgetService;
 import unis.project.delta.global.exception.CustomException;
 import unis.project.delta.global.exception.ErrorCode;
@@ -20,11 +20,11 @@ public class MonthlyBudgetController {
 
     // 월예산 생성
     @PostMapping
-    public ResponseEntity<ApiResponse<CreateBudgetResponse>> createMonthlyBudget (
+    public ResponseEntity<ApiResponse<MonthlyBudgetResponse>> createMonthlyBudget (
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
             @Valid @RequestBody CreateBudgetRequest request) {
         String uuid = extractUuid(authorizationHeader);
-        CreateBudgetResponse response = monthlyBudgetService.createMonthlyBudget(uuid, request);
+        MonthlyBudgetResponse response = monthlyBudgetService.createMonthlyBudget(uuid, request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(response, "월 예산 등록 성공"));
@@ -32,7 +32,14 @@ public class MonthlyBudgetController {
 
     // TODO: 월예산 조회
     @GetMapping
-    public ResponseEntity<ApiResponse<>>
+    public ResponseEntity<ApiResponse<MonthlyBudgetResponse>> getMonthlyBudget(
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
+            @RequestParam(value = "yearMonth") String yearMonth) {
+        String uuid = extractUuid(authorizationHeader);
+        MonthlyBudgetResponse response = monthlyBudgetService.getMonthlyBudget(uuid, yearMonth);
+
+        return ResponseEntity.ok(ApiResponse.success(response, "월 예산 조회 성공"));
+    }
 
 
 
