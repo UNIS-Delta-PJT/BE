@@ -22,7 +22,7 @@ public enum ErrorCode {
 
     // Budget
     MONTHLY_BUDGET_NOT_FOUND(404, "해당 월의 예산이 존재하지 않습니다."),
-    CATEGORY_BUDGET_EXCEEDED(400, "카테고리별 예산 총합이 월 전체 예산을 초과했습니다."),
+    CATEGORY_BUDGET_MISMATCH(400, "카테고리별 예산 총합이 등록 예산과 같지 않습니다."),
     DUPLICATE_YEAR_MONTH(409, "이미 등록된 월 예산이 있습니다."),
 
     // Expense

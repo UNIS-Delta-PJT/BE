@@ -6,7 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import unis.project.delta.category.dto.request.CreateCategoryRequest;
-import unis.project.delta.category.dto.response.CategoryResponse;
+import unis.project.delta.category.dto.response.CreateCategoryResponse;
+import unis.project.delta.category.dto.response.GetCategoryListResponse;
 import unis.project.delta.category.service.CategoryService;
 import unis.project.delta.global.exception.CustomException;
 import unis.project.delta.global.exception.ErrorCode;
@@ -20,19 +21,25 @@ public class CategoryController {
 
     // 카테고리 생성
     @PostMapping
-    public ResponseEntity<ApiResponse<CategoryResponse>> createCategory(
+    public ResponseEntity<ApiResponse<CreateCategoryResponse>> createCategory(
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
             @Valid @RequestBody CreateCategoryRequest request) {
 
         String uuid = extractUuid(authorizationHeader);
-        CategoryResponse response = categoryService.createCategory(uuid, request);
+        CreateCategoryResponse response = categoryService.createCategory(uuid, request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(response, "카테고리 추가 성공"));
     }
 
-
-    // TODO: 카테고리 목록 조회
+    // 카테고리 목록 조회
+    @GetMapping
+    public ResponseEntity<ApiResponse<GetCategoryListResponse>> getAllCategories(
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
+        String uuid = extractUuid(authorizationHeader);
+        GetCategoryListResponse response = categoryService.getAllCategories(uuid);
+        return ResponseEntity.ok(ApiResponse.success(response, "카테고리 목록 조회 성공"));
+    }
 
 
     // 인증 헤더가 제대로 들어왔는지 확인 후 uuid 36자만 추출하는 메소드
