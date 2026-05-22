@@ -18,7 +18,7 @@ import unis.project.delta.global.exception.dto.ApiResponse;
 public class MonthlyBudgetController {
     private final MonthlyBudgetService monthlyBudgetService;
 
-    // TODO: 월예산 생성
+    // 월예산 생성
     @PostMapping
     public ResponseEntity<ApiResponse<CreateBudgetResponse>> createMonthlyBudget (
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
@@ -30,8 +30,9 @@ public class MonthlyBudgetController {
                 .body(ApiResponse.success(response, "월 예산 등록 성공"));
     }
 
-
     // TODO: 월예산 조회
+    @GetMapping
+    public ResponseEntity<ApiResponse<>>
 
 
 

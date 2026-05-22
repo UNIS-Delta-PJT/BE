@@ -46,4 +46,8 @@ public class MonthlyBudget extends BaseEntity {
         this.categoryBudgets.add(categoryBudget);
         categoryBudget.setMonthlyBudget(this); // 자식에게 부모 주입
     }
+
+    public void updateTotalAmount(Long totalAmount) {
+        this.totalAmount = totalAmount;
+    }
 }

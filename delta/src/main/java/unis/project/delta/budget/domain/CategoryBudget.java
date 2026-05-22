@@ -39,4 +39,8 @@ public class CategoryBudget extends BaseEntity {
     public void setMonthlyBudget(MonthlyBudget monthlyBudget) {
         this.monthlyBudget = monthlyBudget;
     }
+
+    public void updateAmount(Long amount) {
+        this.amount = amount;
+    }
 }
