@@ -24,6 +24,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(Arrays.asList(
+                "http://localhost:5174",
                 "http://localhost:5173", // 프론트 로컬 테스트 주소
                 "http://localhost:3000", // 프론트 서브 포트 대비용
                 "https://unis-delta.p-e.kr", // 백엔드 배포 주소
