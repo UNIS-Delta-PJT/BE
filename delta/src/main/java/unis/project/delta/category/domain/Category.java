@@ -25,7 +25,7 @@ public class Category extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(nullable = true)
+    @Column(nullable = true, length = 50)
     private String name;
 
     @Column(nullable = false)

@@ -8,7 +8,7 @@ import unis.project.delta.home.service.HomeService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/home")
+@RequestMapping("/home")
 public class HomeController {
 
     private final HomeService homeService;

@@ -4,24 +4,24 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-
 import lombok.RequiredArgsConstructor;
-import unis.project.delta.domain.CategoryBudget;
-import unis.project.delta.domain.CharacterProfile;
-import unis.project.delta.domain.Expense;
-import unis.project.delta.domain.MonthlyBudget;
-import unis.project.delta.domain.User;
+
+import unis.project.delta.budget.repository.MonthlyBudgetRepository;
+import unis.project.delta.character.repository.CharacterRepository;
+import unis.project.delta.budget.domain.CategoryBudget;
+import unis.project.delta.character.domain.Character;
+import unis.project.delta.expense.domain.Expense;
+import unis.project.delta.budget.domain.MonthlyBudget;
+import unis.project.delta.user.domain.User;
+import unis.project.delta.expense.repository.ExpenseRepository;
 import unis.project.delta.home.dto.HomeBudgetResponse;
 import unis.project.delta.home.dto.HomeCategoryResponse;
 import unis.project.delta.home.dto.HomeCharacterResponse;
 import unis.project.delta.home.dto.HomeResponse;
 import unis.project.delta.home.dto.HomeUserResponse;
 import unis.project.delta.home.dto.RecentExpenseResponse;
-import unis.project.delta.repository.CategoryBudgetRepository;
-import unis.project.delta.repository.CharacterProfileRepository;
-import unis.project.delta.repository.ExpenseRepository;
-import unis.project.delta.repository.MonthlyBudgetRepository;
-import unis.project.delta.repository.UserRepository;
+import unis.project.delta.home.repository.CategoryBudgetRepository;
+import unis.project.delta.user.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +31,7 @@ public class HomeService {
     private final MonthlyBudgetRepository monthlyBudgetRepository;
     private final CategoryBudgetRepository categoryBudgetRepository;
     private final ExpenseRepository expenseRepository;
-    private final CharacterProfileRepository characterProfileRepository;
+    private final CharacterRepository characterProfileRepository;
 
     public HomeResponse getHome(String authorization, String yearMonth) {
         String uuid = extractUuid(authorization);
@@ -46,12 +46,13 @@ public class HomeService {
         List<CategoryBudget> categoryBudgets =
                 categoryBudgetRepository.findByMonthlyBudget(monthlyBudget);
 
+        java.time.YearMonth parsedYearMonth = java.time.YearMonth.parse(yearMonth);
+
+        java.time.LocalDate startDate = parsedYearMonth.atDay(1);
+        java.time.LocalDate endDate = parsedYearMonth.atEndOfMonth();
+
         List<Expense> expenses =
-                expenseRepository.findByUserAndExpenseDateBetween(
-                        user,
-                        yearMonth + "-01",
-                        yearMonth + "-31"
-                );
+                expenseRepository.findByUserAndExpenseDateBetween(user, startDate, endDate);
 
         long totalSpentAmount = expenses.stream()
                 .mapToLong(Expense::getAmount)
@@ -98,12 +99,12 @@ public class HomeService {
                         .expenseId(expense.getExpenseId())
                         .categoryName(expense.getCategory().getName())
                         .amount(expense.getAmount())
-                        .expenseDate(expense.getExpenseDate())
+                        .expenseDate(expense.getExpenseDate().toString())
                         .memo(expense.getMemo())
                         .build())
                 .toList();
 
-        CharacterProfile character = characterProfileRepository.findByUser(user)
+        Character character = characterProfileRepository.findByUser(user)
                 .orElse(null);
 
         HomeCharacterResponse characterResponse = null;
