@@ -1,10 +1,10 @@
-package unis.project.delta.controller;
+package unis.project.delta.home.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import unis.project.delta.dto.home.HomeResponse;
+import unis.project.delta.home.dto.HomeResponse;
 import unis.project.delta.global.exception.dto.ApiResponse;
-import unis.project.delta.service.HomeService;
+import unis.project.delta.home.service.HomeService;
 
 @RestController
 @RequiredArgsConstructor

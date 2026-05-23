@@ -1,4 +1,4 @@
-package unis.project.delta.dto.report;
+package unis.project.delta.report.dto;
 
 public class WeeklyReportResponse {
 

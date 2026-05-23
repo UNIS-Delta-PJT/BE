@@ -1,4 +1,4 @@
-package unis.project.delta.dto.home;
+package unis.project.delta.home.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
