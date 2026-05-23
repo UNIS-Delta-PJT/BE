@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import unis.project.delta.budget.domain.CategoryBudget;
 import unis.project.delta.budget.domain.MonthlyBudget;
 import unis.project.delta.budget.dto.request.CreateBudgetRequest;
+import unis.project.delta.budget.dto.request.UpdateBudgetRequest;
 import unis.project.delta.budget.dto.response.MonthlyBudgetResponse;
 import unis.project.delta.budget.repository.MonthlyBudgetRepository;
 import unis.project.delta.category.domain.Category;
@@ -98,7 +99,7 @@ public class MonthlyBudgetService {
         return MonthlyBudgetResponse.from(budget);
     }
 
-    // TODO: 2. 월예산 조회
+    // 2. 월예산 조회
     @Transactional(readOnly = true)
     public MonthlyBudgetResponse getMonthlyBudget(String uuid, String yearMonth) {
         User user = findByUuid(uuid);
@@ -107,8 +108,45 @@ public class MonthlyBudgetService {
         return MonthlyBudgetResponse.from(monthlyBudget);
     }
 
+    // 월예산 수정
+    @Transactional
+    public MonthlyBudgetResponse updateMonthlyBudget(String uuid, Long monthlyBudgetId, UpdateBudgetRequest request) {
+        User user = findByUuid(uuid);
 
-    // TODO: 3. 월예산 수정
+        MonthlyBudget budget = monthlyBudgetRepository.findById(monthlyBudgetId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MONTHLY_BUDGET_NOT_FOUND));
+
+        // 이 예산판의 주인이 지금 요청을 보낸 유저가 맞는지 확인
+        if (!budget.getUser().getUserId().equals(user.getUserId())) {
+            throw new CustomException(ErrorCode.USER_MISMATCH);
+        }
+
+        // 금액 검증
+        long sumOfCategoryBudgets = request.categoryBudgets().stream()
+                .mapToLong(UpdateBudgetRequest.CategoryBudgetDto::amount)
+                .sum();
+
+        if (sumOfCategoryBudgets > request.totalAmount()) {
+            throw new CustomException(ErrorCode.CATEGORY_BUDGET_MISMATCH);
+        }
+
+        budget.updateTotalAmount(request.totalAmount());
+
+        budget.getCategoryBudgets().clear();
+
+        for (UpdateBudgetRequest.CategoryBudgetDto dto : request.categoryBudgets()) {
+            Category category = findByCategoryId(dto.categoryId());
+
+            CategoryBudget newCategoryBudget = CategoryBudget.builder()
+                    .amount(dto.amount())
+                    .category(category)
+                    .build();
+
+            budget.addCategoryBudget(newCategoryBudget);
+        }
+
+        return MonthlyBudgetResponse.from(budget);
+    }
 
 
     // ===== 헬퍼 함수 =====

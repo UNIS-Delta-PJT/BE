@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import unis.project.delta.budget.dto.request.CreateBudgetRequest;
+import unis.project.delta.budget.dto.request.UpdateBudgetRequest;
 import unis.project.delta.budget.dto.response.MonthlyBudgetResponse;
 import unis.project.delta.budget.service.MonthlyBudgetService;
 import unis.project.delta.global.exception.CustomException;
@@ -30,7 +31,7 @@ public class MonthlyBudgetController {
                 .body(ApiResponse.success(response, "월 예산 등록 성공"));
     }
 
-    // TODO: 월예산 조회
+    // 월예산 조회
     @GetMapping
     public ResponseEntity<ApiResponse<MonthlyBudgetResponse>> getMonthlyBudget(
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
@@ -43,7 +44,19 @@ public class MonthlyBudgetController {
 
 
 
-    // TODO: 월예산 수정
+    // 월 예산 수정
+    @PatchMapping("/{monthlyBudgetId}")
+    public ResponseEntity<ApiResponse<MonthlyBudgetResponse>> updateMonthlyBudget(
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
+            @PathVariable("monthlyBudgetId") Long monthlyBudgetId,
+            @Valid @RequestBody UpdateBudgetRequest request) {
+
+        String uuid = extractUuid(authorizationHeader);
+
+        MonthlyBudgetResponse response = monthlyBudgetService.updateMonthlyBudget(uuid, monthlyBudgetId, request);
+
+        return ResponseEntity.ok(ApiResponse.success(response, "월 예산 수정 성공"));
+    }
 
 
     private String extractUuid(String header) {
