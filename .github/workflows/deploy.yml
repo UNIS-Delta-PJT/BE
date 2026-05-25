@@ -18,12 +18,12 @@ jobs:
           distribution: 'temurin'
 
       - name: Grant execute permission for gradlew
-        working-directory: delta
         run: chmod +x gradlew
+        working-directory: delta
 
       - name: Build with Gradle
-        working-directory: delta
         run: ./gradlew bootJar -x test
+        working-directory: delta
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
@@ -36,11 +36,10 @@ jobs:
             git pull origin deploy
             ./gradlew bootJar -x test
             sudo fuser -k 8081/tcp || true
-
-            export RDS_ENDPOINT="${{ secrets.RDS_ENDPOINT }}"
-            export DB_USERNAME="${{ secrets.DB_USERNAME }}"
-            export DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
             
-            nohup java -Dfile.encoding=UTF-8 -Duser.timezone=Asia/Seoul \
-              -jar build/libs/delta-0.0.1-SNAPSHOT.jar \
-              > /home/ubuntu/BE/delta/nohup.out 2>&1 &
+            # 💡 secrets 변수 대신 진짜 정보들을 다이렉트로 안전하게 주입해 줍니다!
+            # 💡 맨 마지막 실행 명령어 파트를 이렇게 수정합니다!
+            RDS_ENDPOINT="unis-delta-rds.cfomgu60kv33.ap-northeast-2.rds.amazonaws.com" \
+            DB_USERNAME="admin" \
+            DB_PASSWORD="teddybrown0315!" \
+            nohup java -Dfile.encoding=UTF-8 -Dserver.port=8081 -Duser.timezone=Asia/Seoul -jar build/libs/delta-0.0.1-SNAPSHOT.jar > /home/ubuntu/BE/delta/nohup.out 2>&1 &
