@@ -36,6 +36,11 @@ jobs:
             git pull origin deploy
             ./gradlew bootJar -x test
             sudo fuser -k 8081/tcp || true
+
+            export RDS_ENDPOINT="${{ secrets.RDS_ENDPOINT }}"
+            export DB_USERNAME="${{ secrets.DB_USERNAME }}"
+            export DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
+            
             nohup java -Dfile.encoding=UTF-8 -Duser.timezone=Asia/Seoul \
               -jar build/libs/delta-0.0.1-SNAPSHOT.jar \
               > /home/ubuntu/BE/delta/nohup.out 2>&1 &
