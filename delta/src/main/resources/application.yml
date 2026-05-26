@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: delta
+
+  sql:
+    init:
+      mode: always
+
+  datasource:
+    # 💡 꿀팁: ${환경변수:로컬기본값} 문법을 쓰면, 환경변수가 없을 땐 로컬 값으로 알아서 작동합니다!
+    url: jdbc:mysql://${RDS_ENDPOINT:localhost}:3306/delta?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:0000}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
