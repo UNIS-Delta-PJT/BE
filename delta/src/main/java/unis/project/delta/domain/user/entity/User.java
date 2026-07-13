@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import unis.project.delta.global.exception.CustomException;
+import unis.project.delta.global.exception.ErrorCode;
 
 @Entity
 @Getter
@@ -68,9 +70,10 @@ public class User {
     }
 
     public void decreaseCoinBalance(Integer coinCnt) {
-        if (this.coinBalance - coinCnt >= 0) {
-            this.coinBalance -= coinCnt;
+        if (this.coinBalance < coinCnt) {
+            throw new CustomException(ErrorCode.INSUFFICIENT_COIN);
         }
+        this.coinBalance -= coinCnt;
     }
 
     public void increaseContinuousAttendance() {
@@ -86,9 +89,10 @@ public class User {
     }
 
     public void decreaseMapPosition(Integer cnt) {
-        if (this.mapPosition - cnt > 0) {
-            this.mapPosition -= cnt;
+        if (this.mapPosition - cnt < 1) {
+            throw new CustomException(ErrorCode.INVALID_MAP_POSITION);
         }
+        this.mapPosition -= cnt;
     }
 
     public void resetMapPosition() {

@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import unis.project.delta.global.exception.CustomException;
+import unis.project.delta.global.exception.ErrorCode;
 
 @Entity
 @Getter
@@ -39,6 +41,9 @@ public class IncomeDetail {
     }
 
     public void updateAmount(Long newAmount) {
+        if (newAmount < 0) {
+            throw new CustomException(ErrorCode.INVALID_AMOUNT);
+        }
         this.amount = newAmount;
     }
 }

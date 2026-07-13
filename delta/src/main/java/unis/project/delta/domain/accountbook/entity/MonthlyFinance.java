@@ -6,8 +6,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import unis.project.delta.domain.user.entity.User;
+import unis.project.delta.global.exception.CustomException;
+import unis.project.delta.global.exception.ErrorCode;
 
 import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -43,6 +47,10 @@ public class MonthlyFinance {
     @Column(nullable = false)
     private SavingsType savingsType;
 
+    // 양방향 매핑: 이달의 지출 예산 리스트
+    @OneToMany(mappedBy = "monthlyFinance", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ExpenseBudget> expenseBudgets = new ArrayList<>();
+
     @Builder
     public MonthlyFinance(User user, String targetMonth, Long totalIncome, Long totalExpenseBudget, Long targetSavings, SavingsType savingsType) {
         this.user = user;
@@ -59,27 +67,24 @@ public class MonthlyFinance {
         this.targetMonth = nextMonth.toString();
     }
 
-    public void addIncome(Long amount) {
-        this.totalIncome += amount;
-    }
-
-    public void subtractIncome(Long amount) {
-        if (this.totalIncome - amount >= 0) {
-            this.totalIncome -= amount;
+    public void updateIncome(Long newTotalIncome) {
+        if(newTotalIncome < 0) {
+            throw new CustomException(ErrorCode.INVALID_AMOUNT);
         }
+        this.totalIncome = newTotalIncome;
     }
 
-    public void addExpenseBudget(Long amount) {
-        this.totalExpenseBudget += amount;
-    }
-
-    public void subtractExpenseBudget(Long amount) {
-        if (this.totalExpenseBudget - amount >= 0) {
-            this.totalExpenseBudget -= amount;
+    public void updateExpenseBudget(Long amount) {
+        if (amount < 0) {
+            throw new CustomException(ErrorCode.INVALID_AMOUNT);
         }
+        this.totalExpenseBudget = amount;
     }
 
     public void updateTargetSavings(Long newTargetSavings) {
+        if (newTargetSavings < 0) {
+            throw new CustomException(ErrorCode.INVALID_AMOUNT);
+        }
         this.targetSavings = newTargetSavings;
     }
 

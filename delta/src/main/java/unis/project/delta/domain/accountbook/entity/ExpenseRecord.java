@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import unis.project.delta.domain.user.entity.User;
+import unis.project.delta.global.exception.CustomException;
+import unis.project.delta.global.exception.ErrorCode;
 
 import java.time.LocalDateTime;
 
@@ -57,6 +59,9 @@ public class ExpenseRecord {
     }
 
     public void updateAmount(Long newAmount) {
+        if (newAmount < 0) {
+            throw new CustomException(ErrorCode.INVALID_AMOUNT);
+        }
         this.amount = newAmount;
     }
 
