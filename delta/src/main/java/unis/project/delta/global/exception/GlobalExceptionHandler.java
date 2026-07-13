@@ -9,7 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import unis.project.delta.global.exception.dto.ApiResponse;
+import unis.project.delta.global.response.ApiResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
