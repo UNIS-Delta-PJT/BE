@@ -6,7 +6,6 @@ import java.util.Map;
 
 public class MapBoardPolicy {
 
-    // 맵의 칸(Integer)과 해당 칸의 타입(SpaceType)을 매핑해두는 불변 객체
     private static final Map<Integer, SpaceType> BOARD = new HashMap<>();
 
     static {
@@ -44,9 +43,8 @@ public class MapBoardPolicy {
         BOARD.put(100, SpaceType.ARRIVAL);
     }
 
-    // 서비스 단에서 이 칸이 무슨 칸인지 물어볼 때 사용할 메서드
     public static SpaceType getSpaceType(int position) {
-        // 맵(BOARD)에 세팅된 칸이면 그 타입을 반환하고, 세팅 안 된 칸이면 기본값인 NORMAL 반환
+        // BOARD에 세팅된 칸이면 그 타입을 반환하고, 세팅 안 된 칸이면 기본값인 NORMAL 반환
         return BOARD.getOrDefault(position, SpaceType.NORMAL);
     }
 }

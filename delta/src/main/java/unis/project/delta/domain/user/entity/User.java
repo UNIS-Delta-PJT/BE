@@ -22,12 +22,13 @@ public class User {
     private String oauthId;
 
     // 사용자가 설정한 캐릭터 닉네임
-    @Column(nullable = false)
+    @Column
     private String nickname;
 
     // 선택한 캐릭터 몸통 색상
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String bodyColor;
+    private BodyColor bodyColor;
 
     // 선택한 캐릭터 눈 모양
     @Enumerated(EnumType.STRING)
@@ -46,18 +47,33 @@ public class User {
     @Column(nullable = false)
     private Integer mapPosition;
 
+    // 전체 푸시 알림 허용 여부
+    @Column(nullable = false)
+    private Boolean isPushEnabled;
+
+    // 야간 푸시 알림 제한 여부
+    @Column(nullable = false)
+    private Boolean isNightPushDisabled;
+
+    // FCM 토큰
+    @Column
+    private String fcmToken;
+
     @Builder
-    public User(String oauthId, String nickname, String bodyColor, EyeShape eyeShape) {
+    public User(String oauthId, String nickname, String fcmToken) {
         this.oauthId = oauthId;
         this.nickname = nickname;
-        this.bodyColor = bodyColor;
-        this.eyeShape = eyeShape;
+        this.bodyColor = BodyColor.WHITE;
+        this.eyeShape = EyeShape.DEFAULT;
         this.coinBalance = 0;
         this.continuousAttendance = 0;
         this.mapPosition = 1;
+        this.isPushEnabled = true;
+        this.isNightPushDisabled = false;
+        this.fcmToken = fcmToken;
     }
 
-    public void updateBodyColor(String newBodyColor) {
+    public void updateBodyColor(BodyColor newBodyColor) {
         this.bodyColor = newBodyColor;
     }
 
@@ -97,5 +113,17 @@ public class User {
 
     public void resetMapPosition() {
         this.mapPosition = 1;
+    }
+
+    public void switchPush(Boolean newPush) {
+        this.isPushEnabled = newPush;
+    }
+
+    public void switchNightPush(Boolean newPush) {
+        this.isNightPushDisabled = newPush;
+    }
+
+    public void updateFcmToken(String newFcmToken) {
+        this.fcmToken = newFcmToken;
     }
 }
