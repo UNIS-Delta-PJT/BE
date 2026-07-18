@@ -73,6 +73,11 @@ public class User {
         this.fcmToken = fcmToken;
     }
 
+    // 캐릭터 설정
+    public void updateNickname(String newNickname) {
+        this.nickname = newNickname;
+    }
+
     public void updateBodyColor(BodyColor newBodyColor) {
         this.bodyColor = newBodyColor;
     }
@@ -81,6 +86,7 @@ public class User {
         this.eyeShape = newEyeShape;
     }
 
+    // 코인
     public void increaseCoinBalance(Integer coinCnt) {
         this.coinBalance += coinCnt;
     }
@@ -92,6 +98,7 @@ public class User {
         this.coinBalance -= coinCnt;
     }
 
+    // 출석
     public void increaseContinuousAttendance() {
         this.continuousAttendance++;
     }
@@ -100,6 +107,7 @@ public class User {
         this.continuousAttendance = 0;
     }
 
+    // 맵
     public void increaseMapPosition(Integer cnt) {
         this.mapPosition += cnt;
     }
@@ -115,6 +123,7 @@ public class User {
         this.mapPosition = 1;
     }
 
+    // 알림
     public void switchPush(Boolean newPush) {
         this.isPushEnabled = newPush;
     }
@@ -123,6 +132,7 @@ public class User {
         this.isNightPushDisabled = newPush;
     }
 
+    // FCM
     public void updateFcmToken(String newFcmToken) {
         this.fcmToken = newFcmToken;
     }
