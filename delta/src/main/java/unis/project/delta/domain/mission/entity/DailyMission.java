@@ -62,9 +62,7 @@ public class DailyMission {
         this.isDiceRewarded = false;
     }
 
-    public void updateTargetDate() {
-        this.targetDate = this.targetDate.plusDays(1);
-    }
+    // ── 출석 ──
 
     public void completeAttendance() {
         this.isAttendanceDone = true;
@@ -74,6 +72,8 @@ public class DailyMission {
         this.isAttendanceRewarded = true;
     }
 
+    // ── 지출 기록 ──
+
     public void completeExpense() {
         this.isExpenseDone = true;
     }
@@ -82,11 +82,43 @@ public class DailyMission {
         this.isExpenseRewarded = true;
     }
 
+    // ── 주사위 ──
+
     public void completeDice() {
         this.isDiceDone = true;
     }
 
     public void rewardDice() {
         this.isDiceRewarded = true;
+    }
+
+    // ── 미션 타입별 달성 여부 조회 ──
+
+    public boolean isDone(DailyMissionType type) {
+        return switch (type) {
+            case ATTENDANCE -> this.isAttendanceDone;
+            case EXPENSE_RECORD -> this.isExpenseDone;
+            case DICE -> this.isDiceDone;
+        };
+    }
+
+    // ── 미션 타입별 리워드 수령 여부 조회 ──
+
+    public boolean isRewarded(DailyMissionType type) {
+        return switch (type) {
+            case ATTENDANCE -> this.isAttendanceRewarded;
+            case EXPENSE_RECORD -> this.isExpenseRewarded;
+            case DICE -> this.isDiceRewarded;
+        };
+    }
+
+    // ── 미션 타입별 리워드 수령 처리 ──
+
+    public void reward(DailyMissionType type) {
+        switch (type) {
+            case ATTENDANCE -> rewardAttendance();
+            case EXPENSE_RECORD -> rewardExpense();
+            case DICE -> rewardDice();
+        }
     }
 }
