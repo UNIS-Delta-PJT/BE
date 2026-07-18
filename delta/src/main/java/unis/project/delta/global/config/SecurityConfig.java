@@ -27,7 +27,7 @@ public class SecurityConfig {
                 "http://localhost:5174",
                 "http://localhost:5173", // 프론트 로컬 테스트 주소
                 "http://localhost:3000", // 프론트 서브 포트 대비용
-                "https://unis-delta.p-e.kr", // 백엔드 배포 주소
+                "http://3.37.62.243:8081", // 백엔드 배포 주소
                 "https://delta-lovat-six.vercel.app")); // 프론트 배포 주소
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
