@@ -1,6 +1,6 @@
--- -- 이미 db에 데이터가 들어가있다면 넘기고 없다면 기본 카테고리 insert 실행하기
--- INSERT IGNORE INTO category (category_id, created_at, modified_at, name, is_default, user_id) VALUES (1, '2026-05-21 00:00:00', null, '식비', true, NULL);
--- INSERT IGNORE INTO category (category_id, created_at, modified_at, name, is_default, user_id) VALUES (2, '2026-05-21 00:00:00', null, '교통', true, NULL);
--- INSERT IGNORE INTO category (category_id, created_at, modified_at, name, is_default, user_id) VALUES (3, '2026-05-21 00:00:00', null, '문화/여가', true, NULL);
--- INSERT IGNORE INTO category (category_id, created_at, modified_at, name, is_default, user_id) VALUES (4, '2026-05-21 00:00:00', null, '기타', true, NULL);
---
+--  코인 패키지 초기 데이터
+INSERT INTO coin_packages (coin_amount, bonus_coin, price) VALUES (10, 0, 1000);
+INSERT INTO coin_packages (coin_amount, bonus_coin, price) VALUES (30, 0, 3000);
+INSERT INTO coin_packages (coin_amount, bonus_coin, price) VALUES (50, 0, 5000);
+INSERT INTO coin_packages (coin_amount, bonus_coin, price) VALUES (100, 10, 10000);
+INSERT INTO coin_packages (coin_amount, bonus_coin, price) VALUES (300, 50, 30000);
