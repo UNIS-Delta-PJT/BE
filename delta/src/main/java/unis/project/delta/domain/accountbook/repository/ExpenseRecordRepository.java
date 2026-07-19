@@ -9,10 +9,6 @@ import unis.project.delta.domain.user.entity.User;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * ExpenseRecordRepository — Finance 도메인에서 생성한 기존 메서드 +
- * Report 도메인에서 필요한 집계 쿼리를 합친 최종 버전.
- */
 public interface ExpenseRecordRepository extends JpaRepository<ExpenseRecord, Long> {
 
     // ── 기존 (Finance 도메인) ──
@@ -59,9 +55,10 @@ public interface ExpenseRecordRepository extends JpaRepository<ExpenseRecord, Lo
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end);
 
-    /** 또래 비교: 해당 기간에 현재 사용자보다 지출이 적은 사용자 수 */
+    /** 또래 비교: 해당 기간에 현재 사용자보다 지출이 많은 사용자 수 */
+    // 🌟 쿼리문 내 e.user.id 뒤에 'AS userId'를 추가하여 하이버네이트 오류를 해결했습니다.
     @Query("SELECT COUNT(*) FROM (" +
-            "  SELECT e.user.id FROM ExpenseRecord e " +
+            "  SELECT e.user.id AS userId FROM ExpenseRecord e " +
             "  WHERE e.expenseDate >= :start AND e.expenseDate < :end " +
             "  GROUP BY e.user.id " +
             "  HAVING SUM(e.amount) > :userTotal" +
