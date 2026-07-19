@@ -1,9 +1,5 @@
 # ERD
 
-사람: 이현경
-상위 항목: 데모데이 (https://app.notion.com/p/38f359f529c18035befef467a2c2d5b0?pvs=21)
-상태: 완료
-
 https://www.erdcloud.com/d/udBEzZpS48XmLLJcE
 
 ![UNIS Delta Project ERD.png](UNIS_Delta_Project_ERD.png)
