@@ -1,8 +1,5 @@
 # 산출물
 
-상위 항목: 데모데이 (https://app.notion.com/p/38f359f529c18035befef467a2c2d5b0?pvs=21)
-상태: 시작 전
-
 ```markdown
 ## 개발 환경
 
