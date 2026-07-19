@@ -38,12 +38,12 @@
 
 ## ERD
 
-![DELTA ERD](https://app.notion.com./UNIS_Delta_Project_ERD.png)
+![DELTA ERD](https://github.com/UNIS-Delta-PJT/BE/blob/main/UNIS_Delta_Project_ERD.png)
 
-- [ERD 상세 설명](https://app.notion.com/p/ERD.md)
+- [ERD 상세 설명](https://github.com/UNIS-Delta-PJT/BE/blob/main/ERD.md)
 
 ---
 
 ## API 명세서
 
-- [API 명세서 확인](https://app.notion.com/p/API.md)
+- [API 명세서 확인](https://github.com/UNIS-Delta-PJT/BE/blob/main/API.md)
