@@ -2,44 +2,134 @@ name: Deploy to EC2
 
 on:
   push:
-    branches: [ deploy ]
+    branches: [deploy]
+
+  # Actions 화면에서 직접 실행할 수도 있게 함
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: unis-delta-deploy
+  cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
+      # 1. GitHub 저장소 코드 가져오기
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
+      # 2. GitHub Actions 컴퓨터에 Java 17 설치
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          java-version: "17"
+          distribution: "temurin"
+          cache: "gradle"
+          cache-dependency-path: delta/*.gradle*
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-        working-directory: delta
-
+      # 3. Spring Boot 실행 파일 생성
       - name: Build with Gradle
-        run: ./gradlew bootJar -x test
         working-directory: delta
+        run: |
+          chmod +x gradlew
+          ./gradlew clean bootJar -x test
 
-      - name: Deploy to EC2
-        uses: appleboy/ssh-action@master
+          JAR_FILE=$(find build/libs \
+            -maxdepth 1 \
+            -type f \
+            -name "*.jar" \
+            ! -name "*-plain.jar" \
+            | head -n 1)
+
+          if [ -z "$JAR_FILE" ]; then
+            echo "실행 가능한 JAR 파일을 찾지 못했습니다."
+            exit 1
+          fi
+
+          cp "$JAR_FILE" ../app.jar
+          echo "배포할 JAR: $JAR_FILE"
+
+      # 4. 빌드된 JAR를 EC2로 전송
+      - name: Upload JAR to EC2
+        uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
+          source: "app.jar"
+          target: "/home/ec2-user/delta"
+          overwrite: true
+
+      # 5. EC2에서 기존 서버를 종료하고 새 서버 실행
+      - name: Restart backend
+        uses: appleboy/ssh-action@v1.2.5
+
+        env:
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          envs: DB_URL,DB_USERNAME,DB_PASSWORD
+
           script: |
-            cd /home/ubuntu/BE/delta
-            git pull origin deploy
-            ./gradlew bootJar -x test
-            sudo fuser -k 8081/tcp || true
-            
-            # 💡 secrets 변수 대신 진짜 정보들을 다이렉트로 안전하게 주입해 줍니다!
-            # 💡 맨 마지막 실행 명령어 파트를 이렇게 수정합니다!
-            RDS_ENDPOINT="unis-delta-rds.cfomgu60kv33.ap-northeast-2.rds.amazonaws.com" \
-            DB_USERNAME="admin" \
-            DB_PASSWORD="teddybrown0315!" \
-            nohup java -Dfile.encoding=UTF-8 -Dserver.port=8081 -Duser.timezone=Asia/Seoul -jar build/libs/delta-0.0.1-SNAPSHOT.jar > /home/ubuntu/BE/delta/nohup.out 2>&1 &
+            set -e
+
+            APP_DIR="/home/ec2-user/delta"
+            cd "$APP_DIR"
+
+            # 이전에 실행된 앱이 있으면 종료
+            if [ -f app.pid ]; then
+              OLD_PID=$(cat app.pid)
+
+              if kill -0 "$OLD_PID" 2>/dev/null; then
+                echo "기존 백엔드 종료: PID=$OLD_PID"
+                kill "$OLD_PID"
+                sleep 5
+              fi
+            fi
+
+            # 새 백엔드 실행
+            nohup env \
+              SPRING_DATASOURCE_URL="$DB_URL" \
+              SPRING_DATASOURCE_USERNAME="$DB_USERNAME" \
+              SPRING_DATASOURCE_PASSWORD="$DB_PASSWORD" \
+              java \
+                -Dfile.encoding=UTF-8 \
+                -Dserver.port=8081 \
+                -Duser.timezone=Asia/Seoul \
+                -jar app.jar \
+                > app.log 2>&1 &
+
+            echo $! > app.pid
+
+            echo "Spring Boot 시작 대기 중..."
+            sleep 20
+
+            NEW_PID=$(cat app.pid)
+
+            # 프로세스 실행 여부 확인
+            if ! kill -0 "$NEW_PID" 2>/dev/null; then
+              echo "백엔드 실행 실패"
+              echo "===== 최근 로그 ====="
+              tail -n 150 app.log
+              exit 1
+            fi
+
+            # 8081 포트 확인
+            if ! ss -lnt | grep -q ":8081"; then
+              echo "프로세스는 있지만 8081 포트가 열리지 않았습니다."
+              echo "===== 최근 로그 ====="
+              tail -n 150 app.log
+              exit 1
+            fi
+
+            echo "백엔드 실행 성공: PID=$NEW_PID, PORT=8081"
