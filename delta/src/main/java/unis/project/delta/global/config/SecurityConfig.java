@@ -66,9 +66,10 @@ public class SecurityConfig {
         );
 
         // 2. 경로별 권한 설정
+        // SecurityConfig.java 내부
         http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(org.springframework.web.cors.CorsUtils::isPreFlightRequest).permitAll() // Preflight 허용
-                .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers("/api/v1/auth/**", "/api/health", "/health", "/error").permitAll() // 🌟 헬스체크 & 에러 경로 토큰 없이 허용!
+                .requestMatchers(org.springframework.web.cors.CorsUtils::isPreFlightRequest).permitAll() // Preflight (OPTIONS) 허용
                 .anyRequest().authenticated()
         );
 
