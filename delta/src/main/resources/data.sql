@@ -31,16 +31,15 @@ VALUES (question), correct_option =
 VALUES (correct_option), explanation =
 VALUES (explanation);
 
--- 4. 해당 퀴즈의 4가지 선택지 (테이블명: finance_quiz_options 반영)
--- ※ @ElementCollection 특성상 외래키(finance_quiz_id)로 연결되므로 테이블명을 정확히 맞춰야 합니다.
+-- 4. 해당 퀴즈의 4가지 선택지
+-- 재시작 시 중복 누적 방지를 위해 해당 퀴즈의 기존 선택지를 먼저 삭제 후 재삽입
+DELETE FROM finance_quiz_options WHERE finance_quiz_id = 88;
+
 INSERT INTO finance_quiz_options (finance_quiz_id, option_number, content)
 VALUES (88, 1, '보통예금'),
        (88, 2, '정기적금'),
        (88, 3, 'CMA'),
-       (88, 4, 'MMF') ON DUPLICATE KEY
-UPDATE
-    content =
-VALUES (content);
+       (88, 4, 'MMF');
 
 -- 기본 지출 카테고리 초기 데이터 삽입
 INSERT INTO expense_categories (id, name, is_default)
