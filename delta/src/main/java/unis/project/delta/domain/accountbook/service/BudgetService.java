@@ -204,7 +204,16 @@ public class BudgetService {
     private MonthlyFinance findCurrentMonthlyFinance(User user) {
         String currentMonth = YearMonth.now().toString();
         return monthlyFinanceRepository.findByUserAndTargetMonth(user, currentMonth)
-                .orElseThrow(() -> new CustomException(ErrorCode.MONTHLY_FINANCE_NOT_FOUND));
+                .orElseGet(() -> monthlyFinanceRepository.save(
+                        MonthlyFinance.builder()
+                                .user(user)
+                                .targetMonth(currentMonth)
+                                .totalIncome(0L)
+                                .targetSavings(0L)
+                                .totalExpenseBudget(0L)
+                                .savingsType(SavingsType.SAVING)
+                                .build()
+                ));
     }
 
     /**
