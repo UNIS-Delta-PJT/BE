@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "groups")
+@Table(name = "user_groups")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Group {
     @Id
