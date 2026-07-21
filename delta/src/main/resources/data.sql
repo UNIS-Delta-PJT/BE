@@ -41,3 +41,14 @@ VALUES (88, 1, '보통예금'),
 UPDATE
     content =
 VALUES (content);
+
+-- 기본 지출 카테고리 초기 데이터 삽입
+INSERT INTO expense_categories (id, name, is_default)
+VALUES (1, '식비', true),
+       (2, '교통', true),
+       (3, '문화', true),
+       (4, '기타', true) ON DUPLICATE KEY
+UPDATE
+    name =
+VALUES (name), is_default =
+VALUES (is_default);

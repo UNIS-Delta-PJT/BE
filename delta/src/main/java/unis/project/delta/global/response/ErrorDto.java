@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Builder
 public class ErrorDto {
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX", timezone = "Asia/Seoul")
     private final LocalDateTime timestamp;
     private final int status;
     private final String error;

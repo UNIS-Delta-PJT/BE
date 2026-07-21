@@ -11,7 +11,7 @@ import unis.project.delta.global.exception.ErrorCode;
 
 @Entity
 @Getter
-@Table(name = "expense_category")
+@Table(name = "expense_categories")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ExpenseCategory {
     @Id
