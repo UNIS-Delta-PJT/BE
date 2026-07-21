@@ -33,7 +33,9 @@ VALUES (explanation);
 
 -- 4. 해당 퀴즈의 4가지 선택지
 -- 재시작 시 중복 누적 방지를 위해 해당 퀴즈의 기존 선택지를 먼저 삭제 후 재삽입
-DELETE FROM finance_quiz_options WHERE finance_quiz_id = 88;
+DELETE
+FROM finance_quiz_options
+WHERE finance_quiz_id = 88;
 
 INSERT INTO finance_quiz_options (finance_quiz_id, option_number, content)
 VALUES (88, 1, '보통예금'),
@@ -51,3 +53,20 @@ UPDATE
     name =
 VALUES (name), is_default =
 VALUES (is_default);
+
+-- 코인 상점 기본 아이템 9종
+INSERT INTO items (id, name, price, type)
+VALUES (1, '분홍 뿔테 안경', 10, 'GLASSES'),
+       (2, '스트라이프 리본', 12, 'TOP'),
+       (3, '체크 나비넥타이', 15, 'TOP'),
+       (4, '색동 복주머니', 15, 'HAT'),
+       (5, '장미 꽃관', 18, 'HAT'),
+       (6, '노랑 파랑 목도리', 20, 'TOP'),
+       (7, '지폐 뭉치', 22, 'BOTTOM'),
+       (8, '반짝이는 별구름', 25, 'HAT'),
+       (9, '하트 골드 코인', 30, 'BOTTOM') ON DUPLICATE KEY
+UPDATE
+    name =
+VALUES (name), price =
+VALUES (price), type =
+VALUES (type);
