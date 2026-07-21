@@ -111,6 +111,7 @@ public class GroupService {
 
     /**
      * 해당 그룹에서 탈퇴한다.
+     * 만약 탈퇴 후 그룹에 남은 구성원이 0명이면 그룹 자체도 삭제한다.
      */
     @Transactional
     public void leaveGroup(Long userId, Long groupId) {
@@ -122,7 +123,15 @@ public class GroupService {
         GroupMember member = groupMemberRepository.findByGroupAndUser(group, user)
                 .orElseThrow(() -> new CustomException(ErrorCode.GROUP_MEMBER_NOT_FOUND));
 
+        // 1. 그룹 멤버 삭제
         groupMemberRepository.delete(member);
+        groupMemberRepository.flush(); // DB에 즉시 반영
+
+        // 2. 남은 멤버 수 확인 후, 0명이면 그룹(Group) 엔티티도 삭제
+        long remainingMembers = groupMemberRepository.countByGroup(group);
+        if (remainingMembers == 0) {
+            groupRepository.delete(group);
+        }
     }
 
     // ── private helpers ──

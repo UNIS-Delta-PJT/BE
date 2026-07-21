@@ -27,6 +27,11 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        String bearerToken = request.getHeader("Authorization");
+        System.out.println("🔍 [요청 Method]: " + request.getMethod());
+        System.out.println("🔍 [요청 URI]: " + request.getRequestURI());
+        System.out.println("🔍 [받은 Authorization 헤더]: " + bearerToken);
+
         // 1. HTTP 요청 헤더에서 JWT 토큰 낚아채기
         String token = resolveToken(request);
 

@@ -67,6 +67,7 @@ public class SecurityConfig {
 
         // 2. 경로별 권한 설정
         http.authorizeHttpRequests(authorize -> authorize
+                .requestMatchers(org.springframework.web.cors.CorsUtils::isPreFlightRequest).permitAll() // Preflight 허용
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 .anyRequest().authenticated()
         );
