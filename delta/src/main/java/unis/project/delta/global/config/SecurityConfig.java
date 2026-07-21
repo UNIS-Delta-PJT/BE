@@ -1,5 +1,6 @@
 package unis.project.delta.global.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -54,14 +55,22 @@ public class SecurityConfig {
         http.formLogin(AbstractHttpConfigurer::disable);
         http.httpBasic(AbstractHttpConfigurer::disable);
 
-        // 🌟 1. 경로별 권한 설정 (인가)
-        http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/v1/auth/**").permitAll() // 카카오 로그인, 토큰 재발급 등은 토큰 없이 통과
-                .anyRequest().authenticated() // 그 외의 모든 API(소비, 예산 등)는 반드시 토큰 인증 필요!
+        // 1. 시큐리티 예외 발생 시 403이 아닌 명세서대로 401을 내보내도록 설정
+        http.exceptionHandling(exception -> exception
+                .authenticationEntryPoint((request, response, authException) -> {
+                    System.out.println("🚨 [시큐리티 인증 실패]: " + authException.getMessage());
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json;charset=UTF-8");
+                    response.getWriter().write("{\"timestamp\":\"" + java.time.LocalDateTime.now() + "\",\"status\":401,\"error\":\"Unauthorized\",\"code\":\"INVALID_ACCESS_TOKEN\",\"message\":\"유효하지 않거나 만료된 Access Token입니다.\"}");
+                })
         );
 
-        // 🌟 2. 필터 체인에 JwtFilter 끼워넣기
-        // UsernamePasswordAuthenticationFilter 가 실행되기 "전"에 우리 JwtFilter가 먼저 실행되도록 설정
+        // 2. 경로별 권한 설정
+        http.authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/api/v1/auth/**").permitAll()
+                .anyRequest().authenticated()
+        );
+
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
