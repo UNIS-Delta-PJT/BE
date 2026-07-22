@@ -32,7 +32,6 @@ VALUES (correct_option), explanation =
 VALUES (explanation);
 
 -- 4. 해당 퀴즈의 4가지 선택지
--- 재시작 시 중복 누적 방지를 위해 해당 퀴즈의 기존 선택지를 먼저 삭제 후 재삽입
 DELETE
 FROM finance_quiz_options
 WHERE finance_quiz_id = 88;
